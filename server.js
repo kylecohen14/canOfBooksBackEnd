@@ -1,11 +1,22 @@
 'use strict';
 
+// const mongoose = require('mongoose');
+
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
+// const { mongoose } = require('mongoose');
+
+const client = jwksClient({
+  jwksUri: 'https://dev-6xlimb1s.us.auth0.com/.well-known/jwks.json'
+});
+
+// mongoose.connect(process.env.MONGODB_URI).then( () => {
+//   console.log('test success');
+// })
 
 const app = express();
 
@@ -14,12 +25,16 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-const client = jwksClient({
-  jwksUri: 'https://dev-6xlimb1s.us.auth0.com'
-  // extension on this Uri???
-});
 
-// function getKey(header)
+
+
+
+function getKey(header) {
+  client.getSigningKey(header.kid, function(err, key) {
+    var signingKey = key.publicKey || key.rsaPublicKey;
+    callback(null, signingKey);
+  });
+}
 
 
 app.get('/auth-test', (req, res) => {
