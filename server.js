@@ -8,7 +8,12 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
+const app = express();
 // const { mongoose } = require('mongoose');
+const PORT = process.env.PORT || 3001;
+
+app.use(cors());
+app.use(express.json());
 
 const client = jwksClient({
   jwksUri: 'https://dev-6xlimb1s.us.auth0.com/.well-known/jwks.json'
@@ -18,18 +23,9 @@ const client = jwksClient({
 //   console.log('test success');
 // })
 
-const app = express();
-
-const PORT = process.env.PORT || 3001;
-
-app.use(cors());
-app.use(express.json());
 
 
-
-
-
-function getKey(header) {
+function getKey(header, callback) {
   client.getSigningKey(header.kid, function(err, key) {
     var signingKey = key.publicKey || key.rsaPublicKey;
     callback(null, signingKey);
@@ -54,7 +50,7 @@ app.get('/auth-test', (req, res) => {
     } else {
       res.json({ 'token': token })
     }
-});
+  });
 });
   
 
