@@ -17,6 +17,7 @@ const User = require('./model/User.js');
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -28,15 +29,15 @@ const mongooseOptions = { useNewUrlParser: true, useUnifiedTopology: true }
 mongoose.connect(process.env.MONGODB_URI, mongooseOptions)
 // 'mongodb://localhost:27017/books-db'
 
-
+// User.collection.drop();
 
 
 // ----------------------------------------------
 // users books
 
-// let kyle = new User({name: 'Ricky', email: 'kylecohen14@gmail.com', books: [{name: 'How to think like a fish', description: 'Learn to think like a fish thinks', status: 'Read'}, {name: 'The total fishing manual', description: 'How to catch fish', status: 'Read'}, {name: 'Encyclopedia of fishing', description: 'Complete guide to the fihs, tackle, and techniques of fresh & saltwater angling', status: 'have not read'}]
-// })
-// kyle.save();
+let kyle = new User({name: 'Ricky', email: 'kylecohen14@gmail.com', books: [{name: 'How to think like a fish', description: 'Learn to think like a fish thinks', status: 'Read'}, {name: 'The total fishing manual', description: 'How to catch fish', status: 'Read'}, {name: 'Encyclopedia of fishing', description: 'Complete guide to the fihs, tackle, and techniques of fresh & saltwater angling', status: 'have not read'}]
+})
+kyle.save();
 
 
 
@@ -57,17 +58,19 @@ mongoose.connect(process.env.MONGODB_URI, mongooseOptions)
     // })
     
     app.post('/books', (req, res) => {
-      let newUser = new User(req.body);
-      newUser.save()
-      .then(result => {
-        res.json(result);
-      })
+      console.log(req.body)
+      const {email, name, description, status} = req.body;
+      User.findOne({email:email})
+      .then(user => {
+        console.log(user)
+        user.books.push(
+          {name:name, description:description, status:status}
+        )
+       user.save()
+        res.json(user);
+      }).catch(err => console.error(err))
     })
-    
-// app.get?????
-// app.get('/books', (req, res) => {
-  
-// })
+
 
 app.get('/books', getAllBooks);
 
